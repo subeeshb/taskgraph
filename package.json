@@ -1,0 +1,36 @@
+{
+  "name": "taskgraph",
+  "version": "1.0.0",
+  "description": "A task runner for Node.js.",
+  "repository": "github:subeeshb/taskgraph",
+  "source": "src/index.ts",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types.d.ts",
+  "scripts": {
+    "clean-dist": "del-cli ./dist",
+    "build": "npm run clean-dist && rollup -c --bundleConfigAsCjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "task runner",
+    "async tasks",
+    "workflow",
+    "build runner"
+  ],
+  "author": "subeeshb (https://github.com/subeeshb)",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "del-cli": "^5.1.0",
+    "rollup": "^4.12.1",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "tslib": "^2.6.3",
+    "typescript": "^5.3.3"
+  }
+}
