@@ -4,12 +4,18 @@ TaskGraph is a task runner for Node.js that facilitates the creation of CLI util
 
 ## How to use
 
+### Installing
+
+```
+npm install taskgraph-runner
+```
+
 ### Task
 
 The basic unit of work is a `Task`. A Task is a distinct action that users of your CLI tool can invoke. To define a Task, create a class that extends the `Task` class and define the `getCommand()`, `getDescription()` and `run()` methods:
 
 ```typescript
-import { Task } from 'taskgraph';
+import { Task } from 'taskgraph-runner';
 
 class BuildWebApp extends Task {
   getCommand() {
@@ -31,7 +37,7 @@ class BuildWebApp extends Task {
 You can define any required params and optional flags using the `getParams()` and `getFlags()` methods. To access the values of a flag or param when the task is being run, call the `getParam(name)` or `getFlag(name)` method.
 
 ```typescript
-import { Task } from 'taskgraph';
+import { Task } from 'taskgraph-runner';
 
 class BuildWebApp extends Task {
   getCommand() {
@@ -68,7 +74,7 @@ You can define any pre-requisite tasks using the `getDependencies()` method. Any
 Note that dependencies are executed in parallel, not in the order they're defined in.
 
 ```typescript
-import { Task } from 'taskgraph';
+import { Task } from 'taskgraph-runner';
 
 class BuildCSS extends Task {
   // ... Implements the "build-css" command.

@@ -1,5 +1,5 @@
 {
-  "name": "taskgraph",
+  "name": "taskgraph-runner",
   "version": "1.0.0",
   "description": "A task runner for Node.js.",
   "repository": "github:subeeshb/taskgraph",
@@ -16,7 +16,9 @@
     "task runner",
     "async tasks",
     "workflow",
-    "build runner"
+    "build runner",
+    "cli",
+    "command line"
   ],
   "author": "subeeshb (https://github.com/subeeshb)",
   "license": "MIT",
