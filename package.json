@@ -1,5 +1,5 @@
 {
-  "name": "taskgraph-runner",
+  "name": "@subeeshb/taskgraph",
   "version": "1.0.0",
   "description": "A task runner for Node.js.",
   "repository": "github:subeeshb/taskgraph",
