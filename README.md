@@ -1,5 +1,7 @@
 # TaskGraph
 
+![taskgraph](https://github.com/user-attachments/assets/187d3121-5c43-4937-910d-e0143d513219)
+
 TaskGraph is a task runner for Node.js that facilitates the creation of CLI utilities and build tools. It allows you to define tasks and their dependencies, ensuring that all required tasks are executed in the correct order.
 
 ## How to use
