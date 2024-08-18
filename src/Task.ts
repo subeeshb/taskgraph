@@ -20,6 +20,11 @@ export enum RunResult {
   Pending = -1,
 }
 
+export enum ExecutionMode {
+  Parallel = 'parallel',
+  Serial = 'serial',
+}
+
 /**
  * A distinct action that can be performed by invoking a command. Extend this class and define the
  * `getCommand()`, `getDescription()` and `run()` methods. Refer to the documentation for a full
@@ -27,6 +32,20 @@ export enum RunResult {
  */
 abstract class Task {
   public readonly isInternalTask: boolean = false;
+
+  /**
+   * How dependencies should be executed - in parallel (default) or serially one after another.
+   */
+  public dependencyExecutionMode: ExecutionMode = ExecutionMode.Parallel;
+
+  /**
+   * Whether the entire run should terminate if this task ends with a failed result.
+   * Use `setResult()` to set the task result at runtime.
+   * When marking a task as failed, it's also good to provide more details on the failure using
+   * the `this.log.info|warn|error()` methods.
+   */
+  public failRunIfTaskFails: boolean = false;
+
   protected argValues: Args = {};
   protected result: RunResult = RunResult.Pending;
   protected spinner: Spinner | null = null;

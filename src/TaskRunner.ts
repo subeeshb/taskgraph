@@ -1,7 +1,7 @@
 import path from 'path';
 import process from 'process';
 import CommandLineParser from 'command-line-parser';
-import Task, { RunResult, TaskDependency } from './Task';
+import Task, { ExecutionMode, RunResult, TaskDependency } from './Task';
 import chalk from 'chalk';
 import { Spinner } from '@topcli/spinner';
 import Logger from './Logger';
@@ -64,6 +64,10 @@ class TaskRunner {
 
     await this.runTask(task);
 
+    this.showLogs();
+  }
+
+  showLogs() {
     console.log('');
     this.loggers.forEach((logger) => {
       logger.printLogs();
@@ -73,34 +77,67 @@ class TaskRunner {
   private async runTask(
     task: Task,
     depth: number = 0,
-    dependencyDefinition?: TaskDependency
+    dependencyDefinition?: TaskDependency,
+    spinner?: Spinner
   ) {
-    let spacer = new Array(depth).fill('   ').join('');
-    if (spacer != '') spacer += '↳ ';
+    if (spinner == null) {
+      let spacer = new Array(depth).fill('   ').join('');
+      if (spacer != '') spacer += '↳ ';
 
-    const spinner = new Spinner();
-    spinner.start(`Waiting...`, {
-      withPrefix: `${spacer}[${task.getTaskLabel()}] `,
-    });
+      spinner = new Spinner();
+      spinner.start(`Waiting...`, {
+        withPrefix: `${spacer}[${task.getTaskLabel()}] `,
+      });
+    }
 
     const dependencies = task.getDependencies();
     if (dependencies.length > 0) {
-      await Promise.all(
-        dependencies.map(async (dependency) => {
-          const dependencyCommand = dependency.command;
-          const dependencyTask = this.tasks[dependencyCommand];
-          if (dependencyTask == null) {
-            // Invalid command specified as a dependency
-            this.printErrorMessage(
-              'Invalid dependency',
-              `The task ${task.getTaskLabel()} defined a dependency "${dependencyCommand}", but this command is not valid.`
-            );
-            process.exit(1);
-          }
+      const executeDependency = async (
+        dependency: TaskDependency,
+        dependencySpinner?: Spinner
+      ) => {
+        const dependencyCommand = dependency.command;
+        const dependencyTask = this.tasks[dependencyCommand];
+        if (dependencyTask == null) {
+          // Invalid command specified as a dependency
+          this.printErrorMessage(
+            'Invalid dependency',
+            `The task ${task.getTaskLabel()} defined a dependency "${dependencyCommand}", but this command is not valid.`
+          );
+          process.exit(1);
+        }
 
-          await this.runTask(dependencyTask, depth + 1, dependency);
-        })
-      );
+        await this.runTask(
+          dependencyTask,
+          depth + 1,
+          dependency,
+          dependencySpinner
+        );
+      };
+
+      if (task.dependencyExecutionMode === ExecutionMode.Serial) {
+        // Create spinners for all dependencies first, so it's clear there are more
+        // steps to come.
+        const dependencySpinners = dependencies.map((dependency) => {
+          const depSpinner = new Spinner();
+          const dependencyTask = this.tasks[dependency.command];
+          let spacer = `${new Array(depth + 1).fill('   ').join('')}↳ `;
+          depSpinner.start(`Waiting...`, {
+            withPrefix: `${spacer}[${dependencyTask.getTaskLabel()}] `,
+          });
+          return depSpinner;
+        });
+
+        for (let i = 0; i < dependencies.length; i++) {
+          await executeDependency(dependencies[i], dependencySpinners[i]);
+        }
+      } else {
+        await Promise.all(
+          dependencies.map(async (dependency) => {
+            await executeDependency(dependency);
+          })
+        );
+      }
     }
 
     const taskArgs = {
@@ -133,6 +170,17 @@ class TaskRunner {
         spinner.text = 'Failed.';
       }
       spinner.failed();
+
+      if (task.failRunIfTaskFails) {
+        this.printErrorMessage(
+          'Run failed',
+          `The ${task.getTaskLabel()} task did not complete successfully.`
+        );
+
+        this.showLogs();
+
+        process.exit(1);
+      }
     } else {
       if (spinner.text === 'Running...') {
         spinner.text = 'Done.';
