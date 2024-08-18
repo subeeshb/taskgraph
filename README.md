@@ -127,13 +127,18 @@ You can create a task extending the `InternalTask` class to define a non-user-ca
 
 #### Reference
 
-Here's a reference of other useful methods in the `Task` class:
+Here's a reference of other useful methods and properties in the `Task` class:
 
 | Method                          | Description                                                                                                                             |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `getTaskLabel(label: string)`   | Sets a label to be shown next to the progress spinner identifying the task. If not specified, the task's command will be shown instead. |
 | `setResult(result: RunResult)`  | Sets the outcome of the task. Set this to either `RunResult.Success` or `RunResult.Failed`.                                             |
 | `setProgressText(text: string)` | Sets the text to be shown on the progress spinner. Use this to update the progress of the task.                                         |
+
+| Property                  | Description                                                                                                                                                                |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dependencyExecutionMode` | How dependencies should be executed - in parallel (default) or serially one after another. Set this to either `ExecutionMode.Parallel` (default) or `ExecutionMode.Serial` |
+| `failRunIfTaskFails`      | Whether the entire run should terminate if this task ends with a failed result.                                                                                            |
 
 ### TaskRunner
 
